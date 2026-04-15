@@ -22,7 +22,7 @@ public class Permutator {
             result[i] = list.get(i);
         }
 
-        return result;
+        return result; // returns shuffled data of watermark
     }
 
     public static byte[] unpermute(byte[] data, int key) {
@@ -43,7 +43,7 @@ public class Permutator {
         byte[] result = new byte[n];
 
         for (int i = 0; i < n; i++){
-            result[indexList.get(i)] = data[i];
+            result[indexList.get(i)] = data[i]; // we are asserting the right positions to the right data
         }
 
         return result;

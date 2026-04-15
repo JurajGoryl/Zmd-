@@ -16,8 +16,8 @@ public class Main {
         }
 
         Watermark temp = new Watermark();
-        int h = 7; // depth
-        int key = 42;
+        int h = 3; // depth 0 - 7
+        int key = 1020202;
 
         // Insertion
         temp.embed((ij.process.ColorProcessor)imageUsed.getProcessor(),

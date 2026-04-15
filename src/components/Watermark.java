@@ -13,8 +13,8 @@ public class Watermark {
 
         for (int i = 0; i < w * h_img; i++) {
             // calculate x y coordinates
-            int x = i % w;
-            int y = i / w;
+            int x = i % w; // we calculate x with modulo bcs it tells us how many pixels are left in the current row
+            int y = i / w; // y with division bcs it tells us how many rows we have passed
             int[] rgb = imageUsed.getPixel(x, y, null); // 0 - R, 1 - G, 2 -B
 
             // Calculate the value of the selected channel
@@ -45,7 +45,11 @@ public class Watermark {
         byte[] extracted = new byte[wW * wH]; // we create a byte array to store the extracted watermark pixels
 
         for (int i = 0; i < extracted.length; i++) {
-            int[] rgb = watermarked.getPixel(i % watermarked.getWidth(), i / watermarked.getWidth(), null); // we calculate x with modulo bcs it tells us how many pixels are left in the current row and y with division bcs it tells us how many rows we have passed
+
+            int x = i % watermarked.getWidth();
+            int y = i / watermarked.getWidth();
+            int[] rgb = watermarked.getPixel(x, y, null);
+
             int bit = (rgb[0] >> h) & 1; // we extract the bit moved by h by shifting it to the end and filtering it with 1
             extracted[i] = (byte) (bit == 1 ? 255 : 0); // if its white or black
         }
