@@ -1,0 +1,7 @@
+Metoda;Utok;Parameter h;Vysledok
+LSB;JPEG (Q50);7;Vykonané
+DCT;JPEG (Q50);50;Vykonané
+LSB;Rotácia 90;7;Synchronizované
+DCT;Resize 50%;50;Obnovené
+LSB;Zrkadlenie;7;OK
+DCT;Orezanie;50;Padding hotový

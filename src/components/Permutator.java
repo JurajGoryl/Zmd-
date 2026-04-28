@@ -38,7 +38,7 @@ public class Permutator {
         // we shuffle the positions using the same key to get the original positions
         ArrayList<Integer> indexList = new ArrayList<>();
         Collections.addAll(indexList, positions);
-        Collections.shuffle(indexList, new Random(key));
+        // Collections.shuffle(indexList, new Random(key));
 
         byte[] result = new byte[n];
 

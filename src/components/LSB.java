@@ -3,13 +3,13 @@ package components;
 import ij.process.ColorProcessor;
 import ij.process.ByteProcessor;
 
-public class Watermark {
+public class LSB {
 
     public void embed(ColorProcessor imageUsed, ByteProcessor watermark, int h, int key, String channel) {
         int w = imageUsed.getWidth();
         int h_img = imageUsed.getHeight();
         byte[] wPixels = (byte[]) watermark.getPixels(); // we make a byte array of the watermark pixels
-        byte[] permutedW = Permutator.permute(wPixels, key); // permute the watermark pixels using the provided key || uncomment to see watermark unpermutated
+        //byte[] permutedW = Permutator.permute(wPixels, key); // permute the watermark pixels using the provided key || uncomment to see watermark unpermutated
 
         for (int i = 0; i < w * h_img; i++) {
             // calculate x y coordinates
@@ -30,7 +30,7 @@ public class Watermark {
 
             // we use modulo to repeat the watermark if the image is larger than the watermark
             int pixelValue = (int) value;
-            int bitW = ((permutedW[i %  permutedW.length] & 0xFF) > 128) ? 1 : 0; // if its greater than 128 it is white || replace permutedW with wPixels to see unpermutated watermark
+            int bitW = ((wPixels[i %  wPixels.length] & 0xFF) > 128) ? 1 : 0; // if its greater than 128 it is white || replace permutedW with wPixels to see unpermutated watermark
 
             // first we create 1 on a h position then we tilda it and filter it with pixelValue and then we add the bitW on the h position
             pixelValue = (pixelValue & ~(1 << h)) | (bitW << h);
