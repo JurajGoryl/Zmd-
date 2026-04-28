@@ -27,6 +27,7 @@ import java.util.ResourceBundle;
 import graphics.Dialogs;
 import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
+import java.util.ArrayList;
 
 
 public class MainWindowController implements Initializable {
@@ -232,7 +233,10 @@ public class MainWindowController implements Initializable {
         Dialogs.showImageInWindow(img, "Cb component");
     }
 
+    private String selectedLsbChannel = "Y";
+
     public void showCbOriginal() {
+        selectedLsbChannel = "Cb";
     }
 
     public void showCrModified() {
@@ -244,7 +248,7 @@ public class MainWindowController implements Initializable {
     }
 
     public void showCrOriginal() {
-
+        selectedLsbChannel = "Cr";
     }
 
     public void showGreenModified() {
@@ -288,7 +292,7 @@ public class MainWindowController implements Initializable {
     }
 
     public void showYOriginal() {
-
+        selectedLsbChannel = "Y";
     }
 
     private BufferedImage watermarkImage;
@@ -305,57 +309,132 @@ public class MainWindowController implements Initializable {
 
     @FXML
     public void runFinalTest() {
+        if (process == null || watermarkImage == null) return;
 
-        if (process == null || watermarkImage == null) {
-            System.out.println("Chyba: Najprv musíš načítať hlavný obrázok aj vodoznak!");
-            return;
-        }
+        File resultsDir = new File("results");
+        if (!resultsDir.exists()) resultsDir.mkdir();
+
+        ArrayList<String[]> logs = new ArrayList<>();
+        logs.add(new String[]{"Method", "Attack", "h", "Status", "Similarity", "Folder Path"});
 
         int key = 1020202;
         int h_lsb = 7;
         int h_dct = 50;
-        int wW = watermarkImage.getWidth();
-        int wH = watermarkImage.getHeight();
-        int origW = process.getOriginalImage().getWidth();
-        int origH = process.getOriginalImage().getHeight();
+        int w = watermarkImage.getWidth();
+        int h = watermarkImage.getHeight();
+        int oW = process.getOriginalImage().getWidth();
+        int oH = process.getOriginalImage().getHeight();
 
-        ImagePlus hostLSB = new ImagePlus("LSB Host", process.getOriginalImage());
-        ImagePlus hostDCT = new ImagePlus("DCT Host", process.getOriginalImage());
         ByteProcessor waterBP = (ByteProcessor) new ImagePlus("W", watermarkImage).getProcessor().convertToByte(false);
+        String[] methods = {"LSB", "DCT"};
 
-        lsbEngine.embed((ColorProcessor)hostLSB.getProcessor(), waterBP, h_lsb, key, "Y");
-        dctEngine.embed((ColorProcessor)hostDCT.getProcessor(), waterBP, h_dct, key);
+        for (String m : methods) {
+            int h_val = m.equals("LSB") ? h_lsb : h_dct;
+            ImagePlus host = new ImagePlus(m, process.getOriginalImage());
 
-        java.util.ArrayList<String[]> logs = new java.util.ArrayList<>();
-        logs.add(new String[]{"Metoda", "Utok", "Parameter h", "Vysledok"});
+            if (m.equals("LSB")) {
+                lsbEngine.embed((ColorProcessor)host.getProcessor(), waterBP, h_val, key, selectedLsbChannel);
+            } else {
+                dctEngine.embed((ColorProcessor)host.getProcessor(), waterBP, h_val, key);
+            }
+
+            ImagePlus jpeg = Attacks.jpegCompression(host, 50);
+            processAndLog(m, "JPEG_Q50", jpeg, jpeg, host, h_val, key, w, h, logs, waterBP);
+
+            ImagePlus png = Attacks.pngCompression(host);
+            processAndLog(m, "PNG", png, png, host, h_val, key, w, h, logs, waterBP);
+
+            ImagePlus rot90raw = Attacks.rotate(host, 90);
+            ImagePlus rot90sync = Attacks.rotate(rot90raw, -90);
+            processAndLog(m, "Rotation_90", rot90raw, rot90sync, host, h_val, key, w, h, logs, waterBP);
+
+            ImagePlus rot45raw = Attacks.rotate(host, 45);
+            ImagePlus rot45sync = Attacks.rotate(rot45raw, -45);
+            processAndLog(m, "Rotation_45", rot45raw, rot45sync, host, h_val, key, w, h, logs, waterBP);
+
+            ImagePlus res75raw = Attacks.resize(host, 0.75);
+            ImagePlus res75sync = Attacks.restoreSize(res75raw, oW, oH);
+            processAndLog(m, "Resize_75", res75raw, res75sync, host, h_val, key, w, h, logs, waterBP);
+
+            ImagePlus res50raw = Attacks.resize(host, 0.5);
+            ImagePlus res50sync = Attacks.restoreSize(res50raw, oW, oH);
+            processAndLog(m, "Resize_50", res50raw, res50sync, host, h_val, key, w, h, logs, waterBP);
+
+            ImagePlus mirRaw = Attacks.mirror(host);
+            ImagePlus mirSync = Attacks.mirror(mirRaw);
+            processAndLog(m, "Mirroring", mirRaw, mirSync, host, h_val, key, w, h, logs, waterBP);
+
+            ImagePlus cropRaw = Attacks.crop(host, 0, 0, oW/2, oH/2);
+            ImagePlus cropSync = Attacks.padBack(cropRaw, oW, oH, 0, 0);
+            processAndLog(m, "Cropping", cropRaw, cropSync, host, h_val, key, w, h, logs, waterBP);
+        }
+
+        core.Excel.saveToCSV(logs);
+        Dialogs.showImageInWindow(null, "Test Suite 2026 Complete! Check 'results' folder.");
+    }
+
+    private void processAndLog(String method, String attack, ImagePlus rawAttacked, ImagePlus synchronizedImg, ImagePlus embeddedHost, int h_val, int key, int w, int h, ArrayList<String[]> logs, ByteProcessor originalWater) {
+        String folderName = "results/" + method + "_" + attack;
+        File dir = new File(folderName);
+        if (!dir.exists()) dir.mkdirs();
+
+        saveImg(process.getOriginalImage(), folderName + "/1_original_host.png");
+        saveImg(embeddedHost.getBufferedImage(), folderName + "/2_embedded_host.png");
+        saveImg(rawAttacked.getBufferedImage(), folderName + "/3_raw_attacked.png");
+        saveImg(synchronizedImg.getBufferedImage(), folderName + "/4_attacked_synchronized.png");
+
+        ij.process.ImageProcessor ip = synchronizedImg.getProcessor();
+        if (!(ip instanceof ColorProcessor)) ip = ip.convertToColorProcessor();
+        ColorProcessor cp = (ColorProcessor) ip;
+
+        ByteProcessor extProc = method.equals("LSB")
+                ? lsbEngine.extract(cp, h_val, key, w, h, selectedLsbChannel)
+                : dctEngine.extract(cp, key, w, h);
+
+        saveImg(new ImagePlus("Ext", extProc).getBufferedImage(), folderName + "/5_extracted_watermark.png");
+
+        double similarity = calculateSimilarity(originalWater, extProc);
+        String status = (similarity > 0.75) ? "PASS" : "FAIL";
+
+        logs.add(new String[]{method, attack, String.valueOf(h_val), status, String.format("%.2f%%", similarity * 100), folderName});
+    }
+
+    private void performAttack(String method, String attack, ImagePlus attImg, int h_val, int key, int w, int h, int oW, int oH, String embPath, ArrayList<String[]> logs, ByteProcessor origWater) {
+        String attPath = "results/" + method + "_attack_" + attack + ".png";
+        saveImg(attImg.getBufferedImage(), attPath);
+
+        ij.process.ImageProcessor ip = attImg.getProcessor();
+        if (!(ip instanceof ColorProcessor)) ip = ip.convertToColorProcessor();
+        ColorProcessor cp = (ColorProcessor) ip;
+
+        ByteProcessor extProc = method.equals("LSB")
+                ? lsbEngine.extract(cp, h_val, key, w, h, selectedLsbChannel)
+                : dctEngine.extract(cp, key, w, h);
 
 
-        ImagePlus attJpeg = Attacks.jpegCompression(hostLSB, 50);
-        logs.add(new String[]{"LSB", "JPEG (Q50)", String.valueOf(h_lsb), "Vykonané"});
+        double similarity = calculateSimilarity(origWater, extProc);
+        String status = (similarity > 0.75) ? "PASS" : "FAIL";
 
-        ImagePlus attJpegDCT = Attacks.jpegCompression(hostDCT, 50);
-        logs.add(new String[]{"DCT", "JPEG (Q50)", String.valueOf(h_dct), "Vykonané"});
+        BufferedImage extImg = new ImagePlus("Extracted", extProc).getBufferedImage();
+        String extPath = "results/" + method + "_ext_" + attack + ".png";
+        saveImg(extImg, extPath);
 
-        ImagePlus attRot = Attacks.rotate(hostLSB, 90);
-        ImagePlus preparedRot = Attacks.rotate(attRot, -90);
-        logs.add(new String[]{"LSB", "Rotácia 90", String.valueOf(h_lsb), "Synchronizované"});
+        logs.add(new String[]{method, attack, String.valueOf(h_val), status, String.format("%.2f%%", similarity * 100), "0_host_orig.png", embPath, attPath, extPath});
+    }
 
-        ImagePlus attSize = Attacks.resize(hostDCT, 0.5);
-        ImagePlus preparedSize = Attacks.restoreSize(attSize, origW, origH);
-        logs.add(new String[]{"DCT", "Resize 50%", String.valueOf(h_dct), "Obnovené"});
+    private double calculateSimilarity(ByteProcessor orig, ByteProcessor ext) {
+        int match = 0;
+        byte[] o = (byte[]) orig.getPixels();
+        byte[] e = (byte[]) ext.getPixels();
+        for (int i = 0; i < o.length; i++) {
+            if (((o[i] & 0xFF) > 128 && (e[i] & 0xFF) > 128) || ((o[i] & 0xFF) <= 128 && (e[i] & 0xFF) <= 128)) match++;
+        }
+        return (double) match / o.length;
+    }
 
-        ImagePlus attMirror = Attacks.mirror(hostLSB);
-        ImagePlus preparedMirror = Attacks.mirror(attMirror); // Spätný flip
-        logs.add(new String[]{"LSB", "Zrkadlenie", String.valueOf(h_lsb), "OK"});
-
-        ImagePlus attCrop = Attacks.crop(hostDCT, 0, 0, origW/2, origH/2);
-        ImagePlus preparedCrop = Attacks.padBack(attCrop, origW, origH, 0, 0);
-        logs.add(new String[]{"DCT", "Orezanie", String.valueOf(h_dct), "Padding hotový"});
-
-        String[][] finalResults = logs.toArray(new String[0][0]);
-        core.Excel.saveToCSV(finalResults);
-
-        Dialogs.showImageInWindow(null, "Testy odolnosti prebehli úspešne! Súbor 'vysledky_odolnosti.csv' bol vytvorený.");
+    private void saveImg(BufferedImage img, String name) {
+        if (img == null) return;
+        try { ImageIO.write(img, "png", new File(name)); } catch (IOException e) { e.printStackTrace(); }
     }
 }
 
