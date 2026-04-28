@@ -9,7 +9,7 @@ public class LSB {
         int w = imageUsed.getWidth();
         int h_img = imageUsed.getHeight();
         byte[] wPixels = (byte[]) watermark.getPixels(); // we make a byte array of the watermark pixels
-        //byte[] permutedW = Permutator.permute(wPixels, key); // permute the watermark pixels using the provided key || uncomment to see watermark unpermutated
+        byte[] permutedW = Permutator.permute(wPixels, key); // permute the watermark pixels using the provided key || uncomment to see watermark unpermutated
 
         for (int i = 0; i < w * h_img; i++) {
             // calculate x y coordinates
@@ -30,7 +30,7 @@ public class LSB {
 
             // we use modulo to repeat the watermark if the image is larger than the watermark
             int pixelValue = (int) value;
-            int bitW = ((wPixels[i %  wPixels.length] & 0xFF) > 128) ? 1 : 0; // if its greater than 128 it is white || replace permutedW with wPixels to see unpermutated watermark
+            int bitW = ((permutedW[i %  permutedW.length] & 0xFF) > 128) ? 1 : 0; // if its greater than 128 it is white || replace permutedW with wPixels to see unpermutated watermark
 
             // first we create 1 on a h position then we tilda it and filter it with pixelValue and then we add the bitW on the h position
             pixelValue = (pixelValue & ~(1 << h)) | (bitW << h);
@@ -40,7 +40,7 @@ public class LSB {
         }
     }
 
-    public ByteProcessor extract(ColorProcessor watermarked, int h, int key, int wW, int wH) {
+    public ByteProcessor extract(ColorProcessor watermarked, int h, int key, int wW, int wH, String channel) {
 
         byte[] extracted = new byte[wW * wH]; // we create a byte array to store the extracted watermark pixels
 
@@ -50,7 +50,17 @@ public class LSB {
             int y = i / watermarked.getWidth();
             int[] rgb = watermarked.getPixel(x, y, null);
 
-            int bit = (rgb[0] >> h) & 1; // we extract the bit moved by h by shifting it to the end and filtering it with 1
+            double value;
+            if (channel.equalsIgnoreCase("Cb")){
+                value = 128 - 0.168 * rgb[0] - 0.331 * rgb[1] + 0.5 * rgb[2];
+            }
+            else if (channel.equalsIgnoreCase("Cr")){
+                value = 128 + 0.5 * rgb[0] - 0.418 * rgb[1] - 0.081 * rgb[2];
+            } else {
+                value = 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2];
+            }
+
+            int bit = ((int)value >> h) & 1; // we extract the bit moved by h by shifting it to the end and filtering it with 1
             extracted[i] = (byte) (bit == 1 ? 255 : 0); // if its white or black
         }
 
