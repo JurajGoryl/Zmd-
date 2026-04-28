@@ -1,13 +1,21 @@
 package core;
-import java.io.PrintWriter;
-import java.io.File;
+
+import java.io.*;
+import java.util.ArrayList;
 
 public class Excel {
-    public static void saveToCSV(String[][] results) {
-        try (PrintWriter pw = new PrintWriter(new File("vysledky_odolnosti.csv"))) {
-            for (String[] row : results) {
+    public static void saveToCSV(ArrayList<String[]> data) {
+        try (PrintWriter pw = new PrintWriter(new File("vysledky_odolnosti.csv"), "UTF-8")) {
+
+            pw.write('\ufeff');
+
+            pw.println("sep=;");
+
+            for (String[] row : data) {
                 pw.println(String.join(";", row));
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
