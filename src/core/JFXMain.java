@@ -26,7 +26,7 @@ public class JFXMain extends Application {
         mainScene = new Scene(root); // Vytvoření scény z fxml souboru
         primaryStage.setScene(mainScene); // Vložení scény do okna
 
-        primaryStage.setTitle("ZMD: Project Juraj Goryl 230252"); // Titulek okna, nastavte svoje
+        primaryStage.setTitle("ZMD: Projekt Juraj Goryl 240913"); // Titulek okna, nastavte svoje
         primaryStage.getIcons().add(core.FileBindings.favicon); // Přidání ikony aplikace
         primaryStage.show(); // Zobrazí rozhraní
 

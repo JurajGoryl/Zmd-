@@ -6,6 +6,7 @@
 *.lo
 *.o
 *.obj
+*.class
 
 # Precompiled Headers
 *.gch
@@ -31,10 +32,32 @@
 *.out
 *.app
 
-# Project
-
+#Project
 odkazy.pdf
-.vscode
+.vscode/
 main
+target/
+out/
+.idea/
+.settings/
+.classpath
+.project
+*.iml
+*.iws
 
-target
+database.db
+database.txt
+
+*.cache/
+*.hw/
+*.ip_user_files/
+*.sim/
+*.runs/
+.Xil/
+*.log
+*.jou
+*.str
+*.pb
+build/
+.idea/
+
