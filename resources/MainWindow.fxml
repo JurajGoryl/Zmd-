@@ -1,201 +1,185 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.Slider?>
-<?import javafx.scene.control.Spinner?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="850.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphics.MainWindowController">
+<BorderPane prefHeight="850.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphics.MainWindowController">
     <top>
-        <StackPane BorderPane.alignment="CENTER">
-            <children>
-                <MenuBar>
-                    <menus>
-                        <Menu mnemonicParsing="false" text="File">
-                            <items>
-                                <MenuItem mnemonicParsing="false" onAction="#changeImage" text="Change Picture" />
-                                <MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
-                            </items>
-                        </Menu>
-                        <Menu mnemonicParsing="false" text="Edit">
-                            <items>
-                                <MenuItem mnemonicParsing="false" onAction="#reset" text="Reset" />
-                                <MenuItem mnemonicParsing="false" onAction="#closeWindows" text="Close images windows" />
-                            </items>
-                        </Menu>
-                    </menus>
-                </MenuBar>
-            </children>
-        </StackPane>
+        <MenuBar BorderPane.alignment="CENTER">
+            <menus>
+                <Menu text="File">
+                    <items>
+                        <MenuItem onAction="#changeImage" text="Change Picture" />
+                        <MenuItem onAction="#close" text="Close" />
+                    </items>
+                </Menu>
+                <Menu text="Edit">
+                    <items>
+                        <MenuItem onAction="#reset" text="Reset" />
+                        <MenuItem onAction="#closeWindows" text="Close images windows" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
     </top>
     <center>
-        <VBox spacing="10.0" styleClass="background" BorderPane.alignment="CENTER">
-            <children>
-                <GridPane alignment="CENTER" hgap="5.0" styleClass="background" vgap="5.0">
-                    <columnConstraints>
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <content>
+                <VBox spacing="15.0" style="-fx-background-color: #f4f4f4;">
+                    <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                    </padding>
                     <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Original" GridPane.columnIndex="1">
-                            <font><Font name="System Bold" size="14.0" /></font>
-                        </Text>
-                        <Button mnemonicParsing="false" onAction="#showRedOriginal" prefWidth="100.0" style="-fx-background-color: red; -fx-text-fill: white; -fx-font-weight: bold;" text="Red" GridPane.rowIndex="1" />
-                        <Button mnemonicParsing="false" onAction="#showGreenOriginal" prefWidth="100.0" style="-fx-background-color: green; -fx-text-fill: white; -fx-font-weight: bold;" text="Green" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Button mnemonicParsing="false" onAction="#showBlueOriginal" prefWidth="100.0" style="-fx-background-color: blue; -fx-text-fill: white; -fx-font-weight: bold;" text="Blue" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                        <Button mnemonicParsing="false" onAction="#showYOriginal" prefWidth="100.0" text="Y" GridPane.rowIndex="2" />
-                        <Button mnemonicParsing="false" onAction="#showCbOriginal" prefWidth="100.0" text="Cb" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Button mnemonicParsing="false" onAction="#showCrOriginal" prefWidth="100.0" text="Cr" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                        <Button mnemonicParsing="false" onAction="#showOriginal" prefWidth="100.0" text="Show Image" />
-                    </children>
-                    <padding><Insets left="5.0" right="5.0" /></padding>
-                </GridPane>
-
-                <GridPane hgap="5.0" styleClass="background" vgap="5.0">
-                    <columnConstraints>
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="40.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Encode" GridPane.columnSpan="2">
-                            <font><Font name="System Bold" size="14.0" /></font>
-                        </Text>
-                        <Button fx:id="buttonToYCbCr" maxWidth="1.797" mnemonicParsing="false" onAction="#convertToYCbCr" text="RGB -> YCbCr" GridPane.rowIndex="1" />
-                        <Button fx:id="buttonSample" maxWidth="1.797" mnemonicParsing="false" onAction="#sample" text="Down Sample" GridPane.rowIndex="2" />
-                        <Button fx:id="buttonTransform" maxWidth="1.797" mnemonicParsing="false" onAction="#transform" text="Transform" GridPane.rowIndex="3" />
-                        <Button fx:id="buttonQuantize" maxWidth="1.797" mnemonicParsing="false" onAction="#quantize" text="Quantize" GridPane.rowIndex="4" />
-                        <ComboBox fx:id="sampling" maxWidth="1.797" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                            <children>
-                                <ComboBox fx:id="transformType" prefWidth="150.0" />
-                                <Spinner fx:id="transformBlock" prefWidth="70.0" />
-                            </children>
-                        </HBox>
-                        <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
-                            <children>
-                                <Slider fx:id="quantizeQuality" prefWidth="200.0" showTickLabels="true" />
-                                <TextField fx:id="quantizeQualityField" prefWidth="50.0" />
-                            </children>
-                        </HBox>
-                    </children>
-                    <padding><Insets left="5.0" right="5.0" /></padding>
-                </GridPane>
-
-                <GridPane hgap="5.0" styleClass="background" vgap="5.0">
-                    <columnConstraints>
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="40.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Decode" GridPane.columnSpan="2">
-                            <font><Font name="System Bold" size="14.0" /></font>
-                        </Text>
-                        <Button fx:id="buttonInverseQuantize" maxWidth="1.797" mnemonicParsing="false" onAction="#inverseQuantize" text="IQuantize" GridPane.rowIndex="1" />
-                        <Button fx:id="buttonInverseTransform" maxWidth="1.797" mnemonicParsing="false" onAction="#inverseTransform" text="ITransform" GridPane.rowIndex="2" />
-                        <Button fx:id="buttonInverseSample" maxWidth="1.797" mnemonicParsing="false" onAction="#inverseSample" text="Over Sample" GridPane.rowIndex="3" />
-                        <Button fx:id="buttonInverseToRGB" maxWidth="1.797" mnemonicParsing="false" onAction="#convertToRGB" text="YCbCr -> RGB" GridPane.rowIndex="4" />
-                    </children>
-                    <padding><Insets left="5.0" right="5.0" /></padding>
-                </GridPane>
-
-                <GridPane hgap="5.0" styleClass="background">
-                    <columnConstraints>
-                        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Objective quality" GridPane.columnSpan="2" GridPane.halignment="CENTER">
-                            <font><Font name="System Bold" size="14.0" /></font>
-                        </Text>
-                        <Button mnemonicParsing="false" onAction="#countQuality" prefWidth="100.0" text="Count" GridPane.rowIndex="1" GridPane.rowSpan="4" GridPane.halignment="CENTER"/>
-                        <Text text="PSNR" GridPane.rowIndex="1" />
-                        <TextField fx:id="qualityPSNR" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Text text="MSE" GridPane.rowIndex="2" />
-                        <TextField fx:id="qualityMSE" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Text text="MAE" GridPane.rowIndex="3" />
-                        <TextField fx:id="qualityMAE" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                        <Text text="SAE" GridPane.rowIndex="4" />
-                        <TextField fx:id="qualitySAE" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                    </children>
-                    <padding><Insets left="5.0" right="5.0" /></padding>
-                </GridPane>
-
-                <GridPane alignment="CENTER" hgap="5.0" styleClass="background" vgap="5.0">
-                    <columnConstraints>
-                        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" percentWidth="35.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Watermarking" GridPane.columnSpan="2" GridPane.halignment="CENTER">
-                            <font><Font name="System Bold" size="14.0" /></font>
-                        </Text>
-                        <HBox alignment="CENTER" spacing="10.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
-                            <children>
-                                <Button mnemonicParsing="false" onAction="#loadWatermark" prefWidth="130.0" text="Load Watermark" />
-                                <Button mnemonicParsing="false" onAction="#runFinalTest" prefWidth="130.0" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;" text="Run Final Test" />
-                            </children>
-                        </HBox>
                         
-                        <Text text="LSB h (0-7):" GridPane.rowIndex="2" />
-                        <HBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                            <Slider fx:id="lsbHSlider" max="7" min="0" showTickLabels="true" HBox.hgrow="ALWAYS" />
-                            <TextField fx:id="lsbHField" prefWidth="45.0" />
-                        </HBox>
+                        <VBox alignment="CENTER" spacing="10.0" style="-fx-border-color: #ccc; -fx-border-radius: 5; -fx-padding: 10;">
+                            <children>
+                                <Label text="Original" style="-fx-font-weight: bold; -fx-font-size: 14;" />
+                                <HBox alignment="CENTER" spacing="10.0">
+                                    <children>
+                                        <Button onAction="#showOriginal" text="Show Image" />
+                                        <CheckBox fx:id="shadesOfGrey" text="Shades of Grey" />
+                                    </children>
+                                </HBox>
+                                <GridPane hgap="10.0" vgap="10.0" alignment="CENTER">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" />
+                                    </columnConstraints>
+                                    <children>
+                                        <Button onAction="#showRedOriginal" maxWidth="Infinity" style="-fx-background-color: #ff4d4d; -fx-text-fill: white; -fx-font-weight: bold;" text="Red" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                                        <Button onAction="#showGreenOriginal" maxWidth="Infinity" style="-fx-background-color: #4db84d; -fx-text-fill: white; -fx-font-weight: bold;" text="Green" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                                        <Button onAction="#showBlueOriginal" maxWidth="Infinity" style="-fx-background-color: #4d4dff; -fx-text-fill: white; -fx-font-weight: bold;" text="Blue" GridPane.rowIndex="0" GridPane.columnIndex="2" />
+                                        <Button onAction="#showYOriginal" maxWidth="Infinity" text="Y" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                                        <Button onAction="#showCbOriginal" maxWidth="Infinity" text="Cb" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                                        <Button onAction="#showCrOriginal" maxWidth="Infinity" text="Cr" GridPane.rowIndex="1" GridPane.columnIndex="2" />
+                                    </children>
+                                </GridPane>
+                            </children>
+                        </VBox>
 
-                        <Text text="DCT h (robust):" GridPane.rowIndex="3" />
-                        <HBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                            <Slider fx:id="dctHSlider" max="100" min="0" showTickLabels="true" HBox.hgrow="ALWAYS" />
-                            <TextField fx:id="dctHField" prefWidth="45.0" />
-                        </HBox>
+                        <VBox spacing="10.0" style="-fx-border-color: #ccc; -fx-border-radius: 5; -fx-padding: 10;">
+                            <children>
+                                <Label text="Process (Encode &amp; Decode)" style="-fx-font-weight: bold; -fx-font-size: 14;" />
+                                <GridPane hgap="10.0" vgap="10.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="140.0" />
+                                        <ColumnConstraints hgrow="ALWAYS" />
+                                    </columnConstraints>
+                                    <children>
+                                        <Button fx:id="buttonToYCbCr" onAction="#convertToYCbCr" maxWidth="Infinity" text="RGB -&gt; YCbCr" />
+                                        <CheckBox fx:id="showSteps" text="Show steps" GridPane.columnIndex="1" />
+                                        
+                                        <Button fx:id="buttonSample" onAction="#sample" maxWidth="Infinity" text="Down Sample" GridPane.rowIndex="1" />
+                                        <ComboBox fx:id="sampling" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                        
+                                        <Button fx:id="buttonTransform" onAction="#transform" maxWidth="Infinity" text="Transform" GridPane.rowIndex="2" />
+                                        <HBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                            <children>
+                                                <ComboBox fx:id="transformType" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+                                                <Spinner fx:id="transformBlock" prefWidth="80.0" />
+                                            </children>
+                                        </HBox>
 
-                        <Text text="Test Block Size:" GridPane.rowIndex="4" />
-                        <Spinner fx:id="watermarkBlock" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                        <Button fx:id="buttonQuantize" onAction="#quantize" maxWidth="Infinity" text="Quantize" GridPane.rowIndex="3" />
+                                        <HBox spacing="5.0" alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                            <children>
+                                                <Slider fx:id="quantizeQuality" HBox.hgrow="ALWAYS" showTickLabels="true" />
+                                                <TextField fx:id="quantizeQualityField" prefWidth="50.0" />
+                                            </children>
+                                        </HBox>
+
+                                        <Separator GridPane.columnSpan="2" GridPane.rowIndex="4" />
+
+                                        <Button fx:id="buttonInverseQuantize" onAction="#inverseQuantize" maxWidth="Infinity" text="IQuantize" GridPane.rowIndex="5" />
+                                        <Button fx:id="buttonInverseTransform" onAction="#inverseTransform" maxWidth="Infinity" text="ITransform" GridPane.rowIndex="6" />
+                                        <Button fx:id="buttonInverseSample" onAction="#inverseSample" maxWidth="Infinity" text="Over Sample" GridPane.rowIndex="7" />
+                                        <Button fx:id="buttonInverseToRGB" onAction="#convertToRGB" maxWidth="Infinity" text="YCbCr -&gt; RGB" GridPane.rowIndex="8" />
+                                    </children>
+                                </GridPane>
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="10.0" style="-fx-border-color: #ccc; -fx-border-radius: 5; -fx-padding: 10;">
+                            <children>
+                                <Label text="Objective Quality" style="-fx-font-weight: bold; -fx-font-size: 14;" />
+                                <GridPane hgap="10.0" vgap="5.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="80.0" />
+                                        <ColumnConstraints hgrow="ALWAYS" />
+                                    </columnConstraints>
+                                    <children>
+                                        <Button onAction="#countQuality" text="Count" prefHeight="60.0" prefWidth="80.0" GridPane.rowSpan="4" />
+                                        <Label text="PSNR:" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                        <TextField fx:id="qualityPSNR" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200.0" />
+                                        <Label text="MSE:" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                        <TextField fx:id="qualityMSE" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                        <Label text="MAE:" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                        <TextField fx:id="qualityMAE" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                        <Label text="SAE:" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                        <TextField fx:id="qualitySAE" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    </children>
+                                </GridPane>
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="10.0" style="-fx-border-color: #ccc; -fx-border-radius: 5; -fx-padding: 10;">
+                            <children>
+                                <Label text="Watermarking" style="-fx-font-weight: bold; -fx-font-size: 14;" />
+                                <HBox spacing="10.0" alignment="CENTER">
+                                    <children>
+                                        <Button onAction="#loadWatermark" text="Load Watermark" />
+                                        <Button onAction="#runFinalTest" text="Run Final Test" style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-font-weight: bold;" />
+                                    </children>
+                                </HBox>
+                                <GridPane hgap="10.0" vgap="10.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" />
+                                        <ColumnConstraints hgrow="ALWAYS" />
+                                        <ColumnConstraints minWidth="50.0" />
+                                    </columnConstraints>
+                                    <children>
+                                        <Label text="LSB h (0-7):" />
+                                        <Slider fx:id="lsbHSlider" max="7" min="0" GridPane.columnIndex="1" />
+                                        <TextField fx:id="lsbHField" prefWidth="50.0" GridPane.columnIndex="2" />
+                                        
+                                        <Label text="DCT h (robust):" GridPane.rowIndex="1" />
+                                        <Slider fx:id="dctHSlider" max="100" min="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                        <TextField fx:id="dctHField" prefWidth="50.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                        
+                                        <Label text="Block Size:" GridPane.rowIndex="2" />
+                                        <Spinner fx:id="watermarkBlock" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    </children>
+                                </GridPane>
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="10.0" style="-fx-border-color: #ccc; -fx-border-radius: 5; -fx-padding: 10;">
+                            <children>
+                                <Label text="Modified Images" style="-fx-font-weight: bold; -fx-font-size: 14;" />
+                                <Button onAction="#showRGBModified" maxWidth="Infinity" text="Show RGB Result" />
+                                <GridPane hgap="10.0" vgap="10.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="80.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="80.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="80.0" />
+                                    </columnConstraints>
+                                    <children>
+                                        <Button onAction="#showRedModified" maxWidth="Infinity" text="Red" />
+                                        <Button onAction="#showGreenModified" maxWidth="Infinity" text="Green" GridPane.columnIndex="1" />
+                                        <Button onAction="#showBlueModified" maxWidth="Infinity" text="Blue" GridPane.columnIndex="2" />
+                                        <Button onAction="#showYModified" maxWidth="Infinity" text="Y" GridPane.rowIndex="1" />
+                                        <Button onAction="#showCbModified" maxWidth="Infinity" text="Cb" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                                        <Button onAction="#showCrModified" maxWidth="Infinity" text="Cr" GridPane.rowIndex="1" GridPane.columnIndex="2" />
+                                    </children>
+                                </GridPane>
+                            </children>
+                        </VBox>
                     </children>
-                    <padding><Insets left="5.0" right="5.0" /></padding>
-                </GridPane>
-
-                <GridPane alignment="CENTER" hgap="5.0" styleClass="background" vgap="5.0">
-                    <columnConstraints>
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Modified" GridPane.columnIndex="1">
-                            <font><Font name="System Bold" size="14.0" /></font>
-                        </Text>
-                        <Button mnemonicParsing="false" onAction="#showRGBModified" prefWidth="100.0" text="RGB" GridPane.rowIndex="1" />
-                        <Button mnemonicParsing="false" onAction="#showRedModified" prefWidth="100.0" text="Red" GridPane.rowIndex="2" />
-                        <Button mnemonicParsing="false" onAction="#showGreenModified" prefWidth="100.0" text="Green" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Button mnemonicParsing="false" onAction="#showBlueModified" prefWidth="100.0" text="Blue" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                        <Button mnemonicParsing="false" onAction="#showYModified" prefWidth="100.0" text="Y" GridPane.rowIndex="3" />
-                        <Button mnemonicParsing="false" onAction="#showCbModified" prefWidth="100.0" text="Cb" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                        <Button mnemonicParsing="false" onAction="#showCrModified" prefWidth="100.0" text="Cr" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                    </children>
-                    <padding><Insets left="5.0" right="5.0" /></padding>
-                </GridPane>
-            </children>
-        </VBox>
+                </VBox>
+            </content>
+        </ScrollPane>
     </center>
 </BorderPane>
