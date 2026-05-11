@@ -1,7 +1,18 @@
-Metoda;Utok;Parameter h;Vysledok
-LSB;JPEG (Q50);7;Vykonané
-DCT;JPEG (Q50);50;Vykonané
-LSB;Rotácia 90;7;Synchronizované
-DCT;Resize 50%;50;Obnovené
-LSB;Zrkadlenie;7;OK
-DCT;Orezanie;50;Padding hotový
+﻿sep=;
+Method;Attack;h;Status;Similarity;Folder Path
+LSB;JPEG_Q50;7;PASS;94.43%;results/LSB_JPEG_Q50
+LSB;PNG;7;PASS;100.00%;results/LSB_PNG
+LSB;Rotation_90;7;PASS;100.00%;results/LSB_Rotation_90
+LSB;Rotation_45;7;FAIL;43.16%;results/LSB_Rotation_45
+LSB;Resize_75;7;PASS;86.23%;results/LSB_Resize_75
+LSB;Resize_50;7;PASS;82.64%;results/LSB_Resize_50
+LSB;Mirroring;7;PASS;100.00%;results/LSB_Mirroring
+LSB;Cropping;7;PASS;100.00%;results/LSB_Cropping
+DCT;JPEG_Q50;19;PASS;90.04%;results/DCT_JPEG_Q50
+DCT;PNG;19;PASS;90.04%;results/DCT_PNG
+DCT;Rotation_90;19;PASS;90.04%;results/DCT_Rotation_90
+DCT;Rotation_45;19;PASS;88.53%;results/DCT_Rotation_45
+DCT;Resize_75;19;PASS;89.79%;results/DCT_Resize_75
+DCT;Resize_50;19;PASS;90.04%;results/DCT_Resize_50
+DCT;Mirroring;19;PASS;90.04%;results/DCT_Mirroring
+DCT;Cropping;19;PASS;90.04%;results/DCT_Cropping

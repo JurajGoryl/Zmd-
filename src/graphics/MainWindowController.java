@@ -3,6 +3,7 @@ package graphics;
 import components.Attacks;
 import components.DCT;
 import components.LSB;
+import components.Permutator;
 import core.FileBindings;
 import core.Helper;
 import enums.SamplingType;
@@ -73,6 +74,12 @@ public class MainWindowController implements Initializable {
     ComboBox<TransformType> transformType;
     @FXML
     ComboBox<SamplingType> sampling;
+    @FXML
+    private Slider lsbHSlider, dctHSlider;
+    @FXML
+    private TextField lsbHField, dctHField;
+    @FXML
+    private Spinner<Integer> watermarkBlock;
 
 
 
@@ -107,6 +114,14 @@ public class MainWindowController implements Initializable {
 
         BufferedImage image = Dialogs.loadImageFromPath(FileBindings.defaultImage);
         process = new Process(image);
+
+        lsbHField.textProperty().bindBidirectional(lsbHSlider.valueProperty(), NumberFormat.getIntegerInstance());
+        dctHField.textProperty().bindBidirectional(dctHSlider.valueProperty(), NumberFormat.getIntegerInstance());
+
+        ObservableList<Integer> waterBlocks = FXCollections.observableArrayList(2, 4, 8, 16, 32, 64, 128);
+        SpinnerValueFactory<Integer> waterSpinnerValues = new SpinnerValueFactory.ListSpinnerValueFactory<>(waterBlocks);
+        waterSpinnerValues.setValue(8);
+        watermarkBlock.setValueFactory(waterSpinnerValues);
     }
 
     public void close() {
@@ -154,7 +169,7 @@ public class MainWindowController implements Initializable {
                 process.getModifiedRed(),
                 process.getModifiedGreen(),
                 process.getModifiedBlue()
-        );
+                );
 
         Dialogs.showImageInWindow(img, "RGB reconstructed");
     }
@@ -212,7 +227,7 @@ public class MainWindowController implements Initializable {
     public void showBlueModified() {
         BufferedImage img = process.getOneColorImage(
                 process.getModifiedBlue()
-        );
+                );
 
         Dialogs.showImageInWindow(img, "Modified Blue");
     }
@@ -220,7 +235,7 @@ public class MainWindowController implements Initializable {
     public void showBlueOriginal() {
         BufferedImage img = process.getOneColorImage(
                 process.getOriginalBlue()
-        );
+                );
 
         Dialogs.showImageInWindow(img, "Original Blue");
     }
@@ -228,7 +243,7 @@ public class MainWindowController implements Initializable {
     public void showCbModified() {
         BufferedImage img = process.getImageFromYCbCr(
                 process.getModifiedCb()
-        );
+                );
 
         Dialogs.showImageInWindow(img, "Cb component");
     }
@@ -242,7 +257,7 @@ public class MainWindowController implements Initializable {
     public void showCrModified() {
         BufferedImage img = process.getImageFromYCbCr(
                 process.getModifiedCr()
-        );
+                );
 
         Dialogs.showImageInWindow(img, "Cr component");
     }
@@ -254,23 +269,23 @@ public class MainWindowController implements Initializable {
     public void showGreenModified() {
         BufferedImage img = process.getOneColorImage(
                 process.getModifiedGreen()
-        );
+                );
 
         Dialogs.showImageInWindow(img, "Modified Green");
     }
 
     public void showGreenOriginal() {
-            BufferedImage img = process.getOneColorImage(
-                    process.getOriginalGreen()
-            );
+        BufferedImage img = process.getOneColorImage(
+                process.getOriginalGreen()
+                );
 
-            Dialogs.showImageInWindow(img, "Original Green");
+        Dialogs.showImageInWindow(img, "Original Green");
     }
 
     public void showRedModified() {
         BufferedImage img = process.getOneColorImage(
                 process.getModifiedRed()
-        );
+                );
 
         Dialogs.showImageInWindow(img, "Modified Red");
     }
@@ -278,7 +293,7 @@ public class MainWindowController implements Initializable {
     public void showRedOriginal() {
         BufferedImage img = process.getOneColorImage(
                 process.getOriginalRed()
-        );
+                );
 
         Dialogs.showImageInWindow(img, "Original Red");
     }
@@ -286,7 +301,7 @@ public class MainWindowController implements Initializable {
     public void showYModified() {
         BufferedImage img = process.getImageFromYCbCr(
                 process.getModifiedY()
-        );
+                );
 
         Dialogs.showImageInWindow(img, "Y component");
     }
@@ -305,7 +320,7 @@ public class MainWindowController implements Initializable {
         if (file != null) {
             watermarkImage = Dialogs.loadImageFromPath(file);
         }
-}
+    }
 
     @FXML
     public void runFinalTest() {
@@ -318,12 +333,14 @@ public class MainWindowController implements Initializable {
         logs.add(new String[]{"Method", "Attack", "h", "Status", "Similarity", "Folder Path"});
 
         int key = 1020202;
-        int h_lsb = 7;
-        int h_dct = 50;
         int w = watermarkImage.getWidth();
         int h = watermarkImage.getHeight();
         int oW = process.getOriginalImage().getWidth();
         int oH = process.getOriginalImage().getHeight();
+        int h_lsb = (int) lsbHSlider.getValue();
+        int h_dct = (int) dctHSlider.getValue();
+        int blockSize = watermarkBlock.getValue();
+
 
         ByteProcessor waterBP = (ByteProcessor) new ImagePlus("W", watermarkImage).getProcessor().convertToByte(false);
         String[] methods = {"LSB", "DCT"};
@@ -335,45 +352,45 @@ public class MainWindowController implements Initializable {
             if (m.equals("LSB")) {
                 lsbEngine.embed((ColorProcessor)host.getProcessor(), waterBP, h_val, key, selectedLsbChannel);
             } else {
-                dctEngine.embed((ColorProcessor)host.getProcessor(), waterBP, h_val, key);
+                dctEngine.embed((ColorProcessor)host.getProcessor(), waterBP, h_val, key, blockSize);
             }
 
             ImagePlus jpeg = Attacks.jpegCompression(host, 50);
-            processAndLog(m, "JPEG_Q50", jpeg, jpeg, host, h_val, key, w, h, logs, waterBP);
+            processAndLog(m, "JPEG_Q50", jpeg, jpeg, host, h_val, key, w, h, logs, waterBP, blockSize);
 
             ImagePlus png = Attacks.pngCompression(host);
-            processAndLog(m, "PNG", png, png, host, h_val, key, w, h, logs, waterBP);
+            processAndLog(m, "PNG", png, png, host, h_val, key, w, h, logs, waterBP, blockSize);
 
             ImagePlus rot90raw = Attacks.rotate(host, 90);
             ImagePlus rot90sync = Attacks.rotate(rot90raw, -90);
-            processAndLog(m, "Rotation_90", rot90raw, rot90sync, host, h_val, key, w, h, logs, waterBP);
+            processAndLog(m, "Rotation_90", rot90raw, rot90sync, host, h_val, key, w, h, logs, waterBP, blockSize);
 
             ImagePlus rot45raw = Attacks.rotate(host, 45);
             ImagePlus rot45sync = Attacks.rotate(rot45raw, -45);
-            processAndLog(m, "Rotation_45", rot45raw, rot45sync, host, h_val, key, w, h, logs, waterBP);
+            processAndLog(m, "Rotation_45", rot45raw, rot45sync, host, h_val, key, w, h, logs, waterBP, blockSize);
 
             ImagePlus res75raw = Attacks.resize(host, 0.75);
             ImagePlus res75sync = Attacks.restoreSize(res75raw, oW, oH);
-            processAndLog(m, "Resize_75", res75raw, res75sync, host, h_val, key, w, h, logs, waterBP);
+            processAndLog(m, "Resize_75", res75raw, res75sync, host, h_val, key, w, h, logs, waterBP, blockSize);
 
             ImagePlus res50raw = Attacks.resize(host, 0.5);
             ImagePlus res50sync = Attacks.restoreSize(res50raw, oW, oH);
-            processAndLog(m, "Resize_50", res50raw, res50sync, host, h_val, key, w, h, logs, waterBP);
+            processAndLog(m, "Resize_50", res50raw, res50sync, host, h_val, key, w, h, logs, waterBP, blockSize);
 
             ImagePlus mirRaw = Attacks.mirror(host);
             ImagePlus mirSync = Attacks.mirror(mirRaw);
-            processAndLog(m, "Mirroring", mirRaw, mirSync, host, h_val, key, w, h, logs, waterBP);
+            processAndLog(m, "Mirroring", mirRaw, mirSync, host, h_val, key, w, h, logs, waterBP, blockSize);
 
             ImagePlus cropRaw = Attacks.crop(host, 0, 0, oW/2, oH/2);
             ImagePlus cropSync = Attacks.padBack(cropRaw, oW, oH, 0, 0);
-            processAndLog(m, "Cropping", cropRaw, cropSync, host, h_val, key, w, h, logs, waterBP);
+            processAndLog(m, "Cropping", cropRaw, cropSync, host, h_val, key, w, h, logs, waterBP, blockSize);
         }
 
         core.Excel.saveToCSV(logs);
         Dialogs.showImageInWindow(null, "Test Suite 2026 Complete! Check 'results' folder.");
     }
 
-    private void processAndLog(String method, String attack, ImagePlus rawAttacked, ImagePlus synchronizedImg, ImagePlus embeddedHost, int h_val, int key, int w, int h, ArrayList<String[]> logs, ByteProcessor originalWater) {
+    private void processAndLog(String method, String attack, ImagePlus rawAttacked, ImagePlus synchronizedImg, ImagePlus embeddedHost, int h_val, int key, int w, int h, ArrayList<String[]> logs, ByteProcessor originalWater, int blockSize) {
         String folderName = "results/" + method + "_" + attack;
         File dir = new File(folderName);
         if (!dir.exists()) dir.mkdirs();
@@ -387,19 +404,26 @@ public class MainWindowController implements Initializable {
         if (!(ip instanceof ColorProcessor)) ip = ip.convertToColorProcessor();
         ColorProcessor cp = (ColorProcessor) ip;
 
-        ByteProcessor extProc = method.equals("LSB")
-                ? lsbEngine.extract(cp, h_val, key, w, h, selectedLsbChannel)
-                : dctEngine.extract(cp, key, w, h);
+        byte[] rawBits = method.equals("LSB")
+            ? lsbEngine.extract(cp, h_val, key, w, h, selectedLsbChannel)
+            : dctEngine.extract(cp, key, w, h, blockSize);
 
-        saveImg(new ImagePlus("Ext", extProc).getBufferedImage(), folderName + "/5_extracted_watermark.png");
+        ByteProcessor scrambledBP = new ByteProcessor(w, h);
+        scrambledBP.setPixels(rawBits);
+        saveImg(new ImagePlus("Scrambled", scrambledBP).getBufferedImage(), folderName + "/5_extracted_scrambled_noise.png");
 
-        double similarity = calculateSimilarity(originalWater, extProc);
+        byte[] unpermutedBits = Permutator.unpermute(rawBits, key);
+        ByteProcessor finalBP = new ByteProcessor(w, h);
+        finalBP.setPixels(unpermutedBits);
+        saveImg(new ImagePlus("Final", finalBP).getBufferedImage(), folderName + "/6_final_watermark.png");
+
+        double similarity = calculateSimilarity(originalWater, finalBP);
         String status = (similarity > 0.75) ? "PASS" : "FAIL";
 
         logs.add(new String[]{method, attack, String.valueOf(h_val), status, String.format("%.2f%%", similarity * 100), folderName});
     }
 
-    private void performAttack(String method, String attack, ImagePlus attImg, int h_val, int key, int w, int h, int oW, int oH, String embPath, ArrayList<String[]> logs, ByteProcessor origWater) {
+    private void performAttack(String method, String attack, ImagePlus attImg, int h_val, int key, int w, int h, int oW, int oH, String embPath, ArrayList<String[]> logs, ByteProcessor origWater, int blockSize) {
         String attPath = "results/" + method + "_attack_" + attack + ".png";
         saveImg(attImg.getBufferedImage(), attPath);
 
@@ -407,10 +431,14 @@ public class MainWindowController implements Initializable {
         if (!(ip instanceof ColorProcessor)) ip = ip.convertToColorProcessor();
         ColorProcessor cp = (ColorProcessor) ip;
 
-        ByteProcessor extProc = method.equals("LSB")
-                ? lsbEngine.extract(cp, h_val, key, w, h, selectedLsbChannel)
-                : dctEngine.extract(cp, key, w, h);
+        byte[] rawBits = method.equals("LSB")
+            ? lsbEngine.extract(cp, h_val, key, w, h, selectedLsbChannel)
+            : dctEngine.extract(cp, key, w, h, blockSize);
 
+        byte[] unpermuted = Permutator.unpermute(rawBits, key);
+
+        ByteProcessor extProc = new ByteProcessor(w, h);
+        extProc.setPixels(unpermuted);
 
         double similarity = calculateSimilarity(origWater, extProc);
         String status = (similarity > 0.75) ? "PASS" : "FAIL";
